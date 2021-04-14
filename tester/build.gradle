@@ -48,9 +48,6 @@ repositories {
 }
 
 configurations.all {
-    // This resolves dependency version conflicts by forcing it to a certain version
-    // It is needed because pdftron uses appComponent, supportV4 and we do not want them to
-    // have version conflicts
     resolutionStrategy.setForcedModules('androidx.core:core:1.3.2')
 }
 
@@ -61,13 +58,6 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxjava:2.2.2'
 
     implementation 'androidx.appcompat:appcompat:1.2.0'
-   // implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
-   /* implementation ('androidx.preference:preference:1.1.1') {
-    exclude group: 'androidx.recyclerview', module: 'recyclerview'
-}*/
-    /*implementation ('androidx.legacy:legacy-preference-v14:1.0.0') {
-        exclude group: 'androidx.recyclerview', module: 'recyclerviewt'
-    }*/
 
     implementation ('com.github.kizitonwose.colorpreference:support:1.1.0') {
         exclude group: 'androidx.recyclerview', module: 'recyclerview'
