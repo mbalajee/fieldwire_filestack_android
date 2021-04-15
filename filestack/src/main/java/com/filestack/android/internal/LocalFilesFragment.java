@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
 import androidx.annotation.Nullable;
@@ -146,7 +147,11 @@ public class LocalFilesFragment extends Fragment implements View.OnClickListener
 
     private Selection processUri(Uri uri) {
         ContentResolver resolver = getActivity().getContentResolver();
-
+        
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            resolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        }
         Cursor cursor = null;
         try {
             cursor = resolver.query(uri, null, null, null, null, null);
