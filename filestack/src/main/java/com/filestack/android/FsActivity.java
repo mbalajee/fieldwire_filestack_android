@@ -11,6 +11,8 @@ import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
+
+import com.bumptech.glide.manager.SupportRequestManagerFragment;
 import com.google.android.material.navigation.NavigationView;
 import androidx.fragment.app.Fragment;
 import androidx.core.content.ContextCompat;
@@ -211,10 +213,12 @@ public class FsActivity extends AppCompatActivity implements
     @Override
     public void onAttachFragment(Fragment fragment) {
         super.onAttachFragment(fragment);
-        try {
-            backListener = (BackButtonListener) fragment;
-        } catch (ClassCastException e) {
-            backListener = null;
+        if (!(fragment.getClass() == SupportRequestManagerFragment.class)) {
+            try {
+                backListener = (BackButtonListener) fragment;
+            } catch (ClassCastException e) {
+                backListener = null;
+            }
         }
     }
 
