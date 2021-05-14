@@ -45,6 +45,8 @@ public class LocalFilesFragment extends Fragment implements View.OnClickListener
     private static final String ARG_THEME = "theme";
     private LocalFilesAdapter adapter = new LocalFilesAdapter();
     private ImageView uploadLocalFilesImageView;
+    private Button openGalleryButton;
+    boolean allowMultipleFiles = true;
 
     public static Fragment newInstance(boolean allowMultipleFiles, Theme theme) {
         Fragment fragment = new LocalFilesFragment();
@@ -59,7 +61,7 @@ public class LocalFilesFragment extends Fragment implements View.OnClickListener
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle state) {
         View view = inflater.inflate(R.layout.filestack__fragment_local_files, container, false);
-        Button openGalleryButton = view.findViewById(R.id.select_gallery);
+        openGalleryButton = view.findViewById(R.id.select_gallery);
         openGalleryButton.setOnClickListener(this);
         Theme theme = getArguments().getParcelable(ARG_THEME);
         ViewCompat.setBackgroundTintList(openGalleryButton, ColorStateList.valueOf(theme.getAccentColor()));
@@ -90,7 +92,7 @@ public class LocalFilesFragment extends Fragment implements View.OnClickListener
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
             intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
             intent.addCategory(Intent.CATEGORY_OPENABLE);
-            boolean allowMultipleFiles = getArguments().getBoolean(ARG_ALLOW_MULTIPLE_FILES, true);
+            allowMultipleFiles = getArguments().getBoolean(ARG_ALLOW_MULTIPLE_FILES, true);
             intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultipleFiles);
             intent.setType("*/*");
 
@@ -130,13 +132,15 @@ public class LocalFilesFragment extends Fragment implements View.OnClickListener
             //update file names
             ArrayList<Selection> selections = Util.getSelectionSaver().getItems();
             ArrayList<String> fileNames = new ArrayList<>();
-            for(Selection selection: selections) {
+            for (Selection selection : selections) {
                 fileNames.add(selection.getName());
             }
 
             if (fileNames.size() > 0) {
+                hideUploadButtonIfRequired();
                 uploadLocalFilesImageView.setVisibility(View.GONE);
             } else {
+                openGalleryButton.setVisibility(View.VISIBLE);
                 uploadLocalFilesImageView.setVisibility(View.VISIBLE);
             }
 
@@ -145,9 +149,14 @@ public class LocalFilesFragment extends Fragment implements View.OnClickListener
         }
     }
 
+    private void hideUploadButtonIfRequired() {
+        if (!allowMultipleFiles)
+            openGalleryButton.setVisibility(View.GONE);
+    }
+
     private Selection processUri(Uri uri) {
         ContentResolver resolver = getActivity().getContentResolver();
-        
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             resolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION
                     | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
