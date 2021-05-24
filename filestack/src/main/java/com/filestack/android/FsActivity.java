@@ -84,7 +84,6 @@ public class FsActivity extends AppCompatActivity implements
     private static final String STATE_SELECTED_SOURCE = "selectedSource";
     private static final String STATE_SHOULD_CHECK_AUTH = "shouldCheckAuth";
     private static final String TAG = "FsActivity";
-    public static final int FILE_STACK_ERROR = 345;
 
     private BackButtonListener backListener;
     private DrawerLayout drawer;
@@ -183,7 +182,7 @@ public class FsActivity extends AppCompatActivity implements
                 shouldCheckAuth = savedInstanceState.getBoolean(STATE_SHOULD_CHECK_AUTH);
             }
         } else {
-            setResult(FILE_STACK_ERROR);
+            setResult(FsConstants.RESULT_FILE_STACK_ERROR);
             finish();
         }
     }

@@ -38,5 +38,7 @@ public class FsConstants {
     public static final String STATUS_COMPLETE = "complete";
     /** Indicates an upload failed. */
     public static final String STATUS_FAILED = "failed";
+    /** Indicates error occurred in activity. */
+    public static final int RESULT_FILE_STACK_ERROR = 345;
 
 }
