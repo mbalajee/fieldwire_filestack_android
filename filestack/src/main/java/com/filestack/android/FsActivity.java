@@ -199,8 +199,7 @@ public class FsActivity extends AppCompatActivity implements
     @Override
     protected void onStop() {
         super.onStop();
-
-        if (Util.getClient()!=null) {
+        if (Util.getClient() != null) {
             SharedPreferences preferences = getPreferences(MODE_PRIVATE);
             String sessionToken = Util.getClient().getSessionToken();
             preferences.edit().putString(PREF_SESSION_TOKEN, sessionToken).apply();
