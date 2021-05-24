@@ -166,20 +166,24 @@ public class FsActivity extends AppCompatActivity implements
         nav.setItemIconTintList(ColorStateList.valueOf(theme.getAccentColor()));
 
         Config config = (Config) intent.getSerializableExtra(FsConstants.EXTRA_CONFIG);
-        String sessionToken = preferences.getString(PREF_SESSION_TOKEN, null);
-        Util.initializeClientIfNeeded(config, sessionToken);
+        if (config != null) {
+            String sessionToken = preferences.getString(PREF_SESSION_TOKEN, null);
+            Util.initializeClientIfNeeded(config, sessionToken);
 
-        if (savedInstanceState == null) {
-            Util.getSelectionSaver().clear();
-
-            selectedSource = sources.get(0);
-            nav.getMenu().performIdentifierAction(Util.getSourceIntId(selectedSource), 0);
-            if (drawer != null) {
-                drawer.openDrawer(GravityCompat.START);
+            if (savedInstanceState == null) {
+                Util.getSelectionSaver().clear();
+                selectedSource = sources.get(0);
+                nav.getMenu().performIdentifierAction(Util.getSourceIntId(selectedSource), 0);
+                if (drawer != null) {
+                    drawer.openDrawer(GravityCompat.START);
+                }
+            } else {
+                selectedSource = savedInstanceState.getString(STATE_SELECTED_SOURCE);
+                shouldCheckAuth = savedInstanceState.getBoolean(STATE_SHOULD_CHECK_AUTH);
             }
         } else {
-            selectedSource = savedInstanceState.getString(STATE_SELECTED_SOURCE);
-            shouldCheckAuth = savedInstanceState.getBoolean(STATE_SHOULD_CHECK_AUTH);
+            setResult(FsConstants.RESULT_FILE_STACK_ERROR);
+            finish();
         }
     }
 
@@ -195,11 +199,12 @@ public class FsActivity extends AppCompatActivity implements
     @Override
     protected void onStop() {
         super.onStop();
-        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
-
-        String sessionToken = Util.getClient().getSessionToken();
-        preferences.edit().putString(PREF_SESSION_TOKEN, sessionToken).apply();
-        Util.getSelectionSaver().setItemChangeListener(null);
+        if (Util.getClient() != null) {
+            SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+            String sessionToken = Util.getClient().getSessionToken();
+            preferences.edit().putString(PREF_SESSION_TOKEN, sessionToken).apply();
+            Util.getSelectionSaver().setItemChangeListener(null);
+        }
     }
 
     @Override

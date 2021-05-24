@@ -5,7 +5,7 @@ public class FsConstants {
     /** Expects boolean value. Selections won't get uploaded automatically if set to false. */
     public static final String EXTRA_AUTO_UPLOAD = "autoUpload";
     /** Expects {{@link com.filestack.Config}}. Sets credential and other account info. */
-    public static final String EXTRA_CONFIG = "config";
+    public static final String EXTRA_CONFIG = "com.filestack.android.config";
     /** Expects {{@link java.util.ArrayList<String>}}. Sets sources to enable. */
     public static final String EXTRA_SOURCES = "sources";
     /** Expects {{@link com.filestack.StorageOptions}}. Sets options for how to store uploads. */
@@ -38,5 +38,7 @@ public class FsConstants {
     public static final String STATUS_COMPLETE = "complete";
     /** Indicates an upload failed. */
     public static final String STATUS_FAILED = "failed";
+    /** Indicates error occurred in activity. */
+    public static final int RESULT_FILE_STACK_ERROR = 345;
 
 }
