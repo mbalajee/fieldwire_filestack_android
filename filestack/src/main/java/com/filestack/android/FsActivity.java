@@ -165,8 +165,8 @@ public class FsActivity extends AppCompatActivity implements
         }
         nav.setItemIconTintList(ColorStateList.valueOf(theme.getAccentColor()));
 
-        Config config = null;//(Config) intent.getSerializableExtra(FsConstants.EXTRA_CONFIG);
-        // if (config != null) {
+        Config config = (Config) intent.getSerializableExtra(FsConstants.EXTRA_CONFIG);
+        if (config != null) {
             String sessionToken = preferences.getString(PREF_SESSION_TOKEN, null);
             Util.initializeClientIfNeeded(config, sessionToken);
 
@@ -181,10 +181,10 @@ public class FsActivity extends AppCompatActivity implements
                 selectedSource = savedInstanceState.getString(STATE_SELECTED_SOURCE);
                 shouldCheckAuth = savedInstanceState.getBoolean(STATE_SHOULD_CHECK_AUTH);
             }
-      /*  } else {
+        } else {
             setResult(FsConstants.RESULT_FILE_STACK_ERROR);
             finish();
-        }*/
+        }
     }
 
     @Override
