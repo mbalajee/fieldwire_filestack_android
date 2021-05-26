@@ -18,7 +18,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 group = 'com.filestack'
-version = '5.6.3'
+version = '5.6.4'
 project.archivesBaseName = 'fieldwire-filestack-android'
 
 android {
