@@ -357,7 +357,7 @@ public class FsActivity extends AppCompatActivity implements
     private void showFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.content, fragment)
-                .commit();
+                .commitAllowingStateLoss();
     }
 
     private void checkAuth() {
