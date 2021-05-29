@@ -1,7 +1,6 @@
 package com.filestack.android.internal;
 
 import android.os.Bundle;
-import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.RecyclerView;
 import android.text.TextUtils;
 import android.text.format.Formatter;
