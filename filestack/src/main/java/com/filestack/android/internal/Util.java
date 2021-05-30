@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -221,6 +222,7 @@ public class Util {
 
     /** Returns true if the MIME type is allowed by the filters. */
     public static boolean mimeAllowed(String[] filters, String mimeType) {
-        return MimeTypeFilter.matches(mimeType, filters) != null;
+        boolean allTypesAllowed = Arrays.asList(filters).contains("*/*");
+        return allTypesAllowed || MimeTypeFilter.matches(mimeType, filters) != null;
     }
 }
