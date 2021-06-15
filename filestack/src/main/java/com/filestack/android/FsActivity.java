@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 
 import com.bumptech.glide.manager.SupportRequestManagerFragment;
 import com.google.android.material.navigation.NavigationView;
+
 import androidx.fragment.app.Fragment;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
@@ -29,6 +30,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.filestack.CloudResponse;
@@ -44,6 +48,7 @@ import com.filestack.android.internal.SelectionSaver;
 import com.filestack.android.internal.SourceInfo;
 import com.filestack.android.internal.UploadService;
 import com.filestack.android.internal.Util;
+import com.filestack.android.utils.RxUtils.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +58,8 @@ import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+
+import static com.filestack.android.utils.RxUtils.zipWithTimer;
 
 /** UI to select and upload files from local and cloud sources.
  *
@@ -90,6 +97,9 @@ public class FsActivity extends AppCompatActivity implements
     private String selectedSource;
     private boolean shouldCheckAuth;
     private NavigationView nav;
+    private ProgressBar progressBar;
+    private FrameLayout content;
+    private RelativeLayout mainLayout;
 
     private boolean allowMultipleFiles;
     private boolean showVersionInfo;
@@ -105,6 +115,7 @@ public class FsActivity extends AppCompatActivity implements
         setContentView(R.layout.filestack__activity_filestack);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
+        progressBar = findViewById(R.id.bar);
         setSupportActionBar(toolbar);
 
         theme = intent.getParcelableExtra(FsConstants.EXTRA_THEME);
@@ -114,6 +125,7 @@ public class FsActivity extends AppCompatActivity implements
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().setStatusBarColor(theme.getAccentColor());
+            progressBar.setIndeterminateTintList(ColorStateList.valueOf(theme.getAccentColor()));
         }
         getSupportActionBar().setTitle(theme.getTitle());
         toolbar.setTitleTextColor(theme.getBackgroundColor());
@@ -130,9 +142,17 @@ public class FsActivity extends AppCompatActivity implements
         }
 
         nav = findViewById(R.id.nav_view);
+        mainLayout = findViewById(R.id.main_layout);
         nav.setNavigationItemSelectedListener(this);
         nav.setItemTextColor(ColorStateList.valueOf(theme.getAccentColor()));
         nav.setBackgroundColor(theme.getBackgroundColor());
+
+        content = findViewById(R.id.content);
+        content.setBackgroundColor(theme.getBackgroundColor());
+        mainLayout.setBackgroundColor(theme.getBackgroundColor());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            progressBar.setIndeterminateTintList(ColorStateList.valueOf(theme.getAccentColor()));
+        }
 
         ((TextView) nav.getHeaderView(0).findViewById(R.id.filestack__drawer_title)).setTextColor(theme.getBackgroundColor());
         nav.getHeaderView(0).findViewById(R.id.filestack__drawer_header_container).setBackgroundColor(theme.getAccentColor());
@@ -286,6 +306,7 @@ public class FsActivity extends AppCompatActivity implements
     @Override
     public void onError(Throwable e) {
         e.printStackTrace();
+        hideLoading();
         // TODO Error handling
     }
 
@@ -316,6 +337,7 @@ public class FsActivity extends AppCompatActivity implements
 
         selectedSource = source;
         if (fragment == null) {
+            progressBar.setVisibility(View.VISIBLE);
             checkAuth();
         } else {
             shouldCheckAuth = false;
@@ -340,7 +362,6 @@ public class FsActivity extends AppCompatActivity implements
     @Override
     public void onSuccess(CloudResponse contents) {
         String authUrl = contents.getAuthUrl();
-
         // TODO Switching source views shouldn't depend on a network request
 
         if (authUrl != null) {
@@ -352,6 +373,7 @@ public class FsActivity extends AppCompatActivity implements
             CloudListFragment fragment = CloudListFragment.create(selectedSource, allowMultipleFiles, theme);
             showFragment(fragment);
         }
+        hideLoading();
     }
 
     private void showFragment(Fragment fragment) {
@@ -361,9 +383,10 @@ public class FsActivity extends AppCompatActivity implements
     }
 
     private void checkAuth() {
+        showLoading();
         SourceInfo info = Util.getSourceInfo(selectedSource);
-        Util.getClient()
-                .getCloudItemsAsync(info.getId(), "/")
+        zipWithTimer(Util.getClient()
+                .getCloudItemsAsync(info.getId(), "/"),400L)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this);
@@ -385,6 +408,16 @@ public class FsActivity extends AppCompatActivity implements
         data.putExtra(FsConstants.EXTRA_SELECTION_LIST, selections);
         setResult(RESULT_OK, data);
         finish();
+    }
+
+    private void showLoading() {
+        progressBar.setVisibility(View.VISIBLE);
+        content.setVisibility(View.GONE);
+    }
+
+    private void hideLoading() {
+        progressBar.setVisibility(View.GONE);
+        content.setVisibility(View.VISIBLE);
     }
 
     private void showAboutDialog() {
