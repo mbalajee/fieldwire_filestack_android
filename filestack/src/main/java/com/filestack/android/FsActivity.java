@@ -48,7 +48,6 @@ import com.filestack.android.internal.SelectionSaver;
 import com.filestack.android.internal.SourceInfo;
 import com.filestack.android.internal.UploadService;
 import com.filestack.android.internal.Util;
-import com.filestack.android.utils.RxUtils.*;
 
 import java.util.ArrayList;
 import java.util.List;
