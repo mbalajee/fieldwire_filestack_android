@@ -204,6 +204,7 @@ public class FsActivity extends AppCompatActivity implements
             setResult(FsConstants.RESULT_FILE_STACK_ERROR);
             finish();
         }
+        hideLoading();
     }
 
     @Override
